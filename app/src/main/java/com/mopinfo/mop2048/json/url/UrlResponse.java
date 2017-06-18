@@ -7,13 +7,13 @@ import java.util.List;
  */
 public class UrlResponse extends UrlRequest {
 
-    private List<String> urlList;
+    private List<UrlItem> urlItemList;
 
-    public List<String> getUrlList() {
-        return urlList;
+    public List<UrlItem> getUrlItemList() {
+        return urlItemList;
     }
 
-    public void setUrlList(List<String> urlList) {
-        this.urlList = urlList;
+    public void setUrlItemList(List<UrlItem> urlItemList) {
+        this.urlItemList = urlItemList;
     }
 }

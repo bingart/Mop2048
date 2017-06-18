@@ -2,6 +2,7 @@ package com.mopinfo.mop2048.core;
 
 import com.mopinfo.mop2048.common.NutchException;
 import com.mopinfo.mop2048.config.ConfigManager;
+import com.mopinfo.mop2048.json.url.UrlItem;
 import com.mopinfo.mop2048.json.url.UrlResponse;
 import com.mopinfo.mop2048.log.ILogger;
 import com.mopinfo.mop2048.log.LogMannger;
@@ -18,7 +19,7 @@ public class ResourceManager {
 
     private static ResourceManager s;
 
-    private List<String> mUrlList;
+    private List<UrlItem> mUrlItemList;
 
     public static ResourceManager getInstance() {
         if (s == null)
@@ -27,13 +28,13 @@ public class ResourceManager {
     }
 
     private ResourceManager() {
-        this.mUrlList = null;
+        this.mUrlItemList = null;
     }
 
-    public synchronized void setUrlList(List<String> urlList) {
-        this.mUrlList = new ArrayList<String>();
-        for (String url : urlList) {
-            this.mUrlList.add(url);
+    public synchronized void setUrlList(List<UrlItem> urlItemList) {
+        this.mUrlItemList = new ArrayList<UrlItem>();
+        for (UrlItem item : urlItemList) {
+            this.mUrlItemList.add(item);
         }
     }
 
@@ -46,7 +47,7 @@ public class ResourceManager {
                     UrlResponse rsp = ResourceHelper.getResource(
                             ConfigManager.getInstance().getHost(),
                             ConfigManager.getInstance().getUid());
-                    setUrlList(rsp.getUrlList());
+                    setUrlList(rsp.getUrlItemList());
                 } catch (NutchException ex) {
                     LOGGER.error("Load error, ex=" + ex);
                 }
@@ -54,13 +55,13 @@ public class ResourceManager {
         };
     }
 
-    public synchronized String GetNextUrl() {
-        if (mUrlList == null || mUrlList.size() == 0) {
+    public synchronized UrlItem GetNextUrlItem() {
+        if (mUrlItemList == null || mUrlItemList.size() == 0) {
             return null;
         }
 
-        String url = mUrlList.get(0);
-        mUrlList.remove(0);
+        UrlItem url = mUrlItemList.get(0);
+        mUrlItemList.remove(0);
 
         return url;
     }
