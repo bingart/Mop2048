@@ -16,6 +16,45 @@ public class HttpHelper {
 
     private static ILogger LOGGER = LogMannger.getInstance().getLogger(HttpHelper.class);
 
+    public static <TRSP> TRSP get(String url, Class<TRSP> clazz) throws IOException, NutchException {
+
+        TRSP response = null;
+
+        Response okResponse = null;
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request okRequest = new Request.Builder().url(url).get().build();
+            okResponse = client.newCall(okRequest).execute();
+            if (okResponse != null && okResponse.isSuccessful()) {
+                String rspContentString = okResponse.body().string();
+                response = JsonHelper.<TRSP>fromJson(rspContentString, clazz);
+                if (response != null) {
+                    // LOGGER.debug("ok");
+                }
+            } else {
+                if (okResponse != null) {
+                    LOGGER.error("HttpHelper: get error, status code is " + okResponse.code());
+                } else {
+                    LOGGER.error("HttpHelper: get error, response is null");
+                }
+            }
+        } catch (Exception ex) {
+            LOGGER.error("HttpHelper: get error, message=" + ex.getMessage());
+        } finally {
+            if (okResponse != null) {
+                try {
+                    if (okResponse.body() != null) {
+                        okResponse.body().close();
+                    }
+                } catch (Exception ex){
+                    throw new NutchException(ErrorCode.QUERY_ERROR, ex.getMessage());
+                }
+            }
+        }
+
+        return response;
+    }
+
     public static <TREQ, TRSP> TRSP postRequest(String url, TREQ request, Class<TRSP> clazz, boolean isCrypt) throws IOException, NutchException {
 
         TRSP response = null;

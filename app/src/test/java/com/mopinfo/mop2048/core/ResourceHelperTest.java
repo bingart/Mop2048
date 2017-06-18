@@ -15,7 +15,7 @@ public class ResourceHelperTest {
 
     @Test
     public void testGetResource() throws Exception {
-        String host = "http://www.mopinfo.com/service/resource";
+        String host = "http://localhost:8000/service/resource.php";
         UrlResponse rsp = ResourceHelper.getResource(host, "U");
         Assert.assertNotNull(rsp);
         Assert.assertNotNull(rsp.getUrlItemList());
