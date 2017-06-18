@@ -38,21 +38,27 @@ public class ResourceManager {
         }
     }
 
-    public void Load() {
+    public void load() {
         // Start thread to load url
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 try {
-                    UrlResponse rsp = ResourceHelper.getResource(
-                            ConfigManager.getInstance().getHost(),
-                            ConfigManager.getInstance().getUid());
-                    setUrlList(rsp.getUrlItemList());
+                    String host = ConfigManager.getInstance().getHost();
+                    String uid = ConfigManager.getInstance().getUid();
+                    LOGGER.debug("load resource, host=" + host);
+                    UrlResponse rsp = ResourceHelper.getResource(host, uid);
+                    if (rsp != null && rsp.getUrlItemList() != null) {
+                        setUrlList(rsp.getUrlItemList());
+                        LOGGER.debug("load ok, rsp.urlItemList.size=" + rsp.getUrlItemList().size());
+                    }
                 } catch (NutchException ex) {
                     LOGGER.error("Load error, ex=" + ex);
                 }
             }
         };
+        Thread t = new Thread(r);
+        t.start();
     }
 
     public synchronized UrlItem GetNextUrlItem() {

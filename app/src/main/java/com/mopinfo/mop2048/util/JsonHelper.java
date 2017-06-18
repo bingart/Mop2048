@@ -20,6 +20,7 @@ public class JsonHelper {
         {
             ObjectMapper mapper = new ObjectMapper();
             try {
+                LOGGER.debug("toJson");
                 res = mapper.writeValueAsString(obj);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -32,6 +33,7 @@ public class JsonHelper {
         T t = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
+            LOGGER.debug("fromJson, json=" + json);
             t = mapper.readValue(json, clazz);
         } catch (IOException e) {
             LOGGER.error("fromJson error, " + e.getMessage());
