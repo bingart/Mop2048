@@ -1,7 +1,7 @@
 package com.mopinfo.mop2048.json.url;
 
 /**
- * Created by feisun on 2017/6/18.
+ * Created by mop on 2017/6/18.
  */
 public class UrlItem {
 

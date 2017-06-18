@@ -1,7 +1,7 @@
 package com.mopinfo.mop2048.util;
 
 /**
- * Created by feisun on 2016/8/25.
+ * Created by mop on 2016/8/25.
  */
 public class Base64Helper {
 

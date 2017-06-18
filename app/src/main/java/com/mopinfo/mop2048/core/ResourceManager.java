@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by feisun on 2017/6/17.
+ * Created by mop on 2017/6/17.
  */
 public class ResourceManager {
 

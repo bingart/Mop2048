@@ -7,21 +7,18 @@ import android.webkit.WebView;
 
 import com.mopinfo.mop2048.R;
 import com.mopinfo.mop2048.core.ResourceManager;
+import com.mopinfo.mop2048.log.ILogger;
+import com.mopinfo.mop2048.log.LogMannger;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static ILogger LOGGER = LogMannger.getInstance().getLogger(MainActivity.class);
 
     private WebView mWebView;
     private WebViewHandler mWebViewHandler;
 
-    private Handler nHandler = new Handler();
-    private Runnable mTask = new Runnable() {
-        public void run() {
-            // Next invoke
-            nHandler.postDelayed(this, 1000);
-            // Trigger
-            mWebViewHandler.onTimer();
-        }
-    };
+    private Handler mHandler;
+    private Runnable mTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,5 +34,17 @@ public class MainActivity extends AppCompatActivity {
         mWebViewHandler = new WebViewHandler(mWebView);
         mWebView.setWebViewClient(mWebViewHandler);
 
+        mHandler = new Handler();
+        mTask = new Runnable() {
+            @Override
+            public void run() {
+                // Next invoke
+                mHandler.postDelayed(this, 1000);
+                // Trigger
+                mWebViewHandler.onTimer();
+            }
+        };
+
+        mHandler.postDelayed(mTask, 1000);
     }
 }

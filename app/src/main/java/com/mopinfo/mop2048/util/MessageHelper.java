@@ -8,7 +8,7 @@ import com.mopinfo.mop2048.log.ILogger;
 import com.mopinfo.mop2048.log.LogMannger;
 
 /**
- * Created by feisun on 2016/8/25.
+ * Created by mop on 2016/8/25.
  */
 public class MessageHelper {
 

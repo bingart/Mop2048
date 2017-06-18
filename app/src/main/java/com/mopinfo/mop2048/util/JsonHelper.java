@@ -8,7 +8,7 @@ import com.mopinfo.mop2048.log.LogMannger;
 import java.io.IOException;
 
 /**
- * Created by feisun on 2016/8/24.
+ * Created by mop on 2016/8/24.
  */
 public class JsonHelper {
 

@@ -3,7 +3,7 @@ package com.mopinfo.mop2048.util;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Created by feisun on 2016/8/24.
+ * Created by mop on 2016/8/24.
  */
 public class CryptHelper {
 

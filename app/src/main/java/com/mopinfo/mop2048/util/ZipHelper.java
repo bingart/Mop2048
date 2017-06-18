@@ -10,7 +10,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Created by feisun on 2016/8/24.
+ * Created by mop on 2016/8/24.
  */
 public class ZipHelper {
 
