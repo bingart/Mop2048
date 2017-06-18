@@ -37,7 +37,7 @@ public class WebViewHandler extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         LOGGER.debug("onPageFinished, url=" + url);
-        this.mState = WebViewState.IDLE;
+        // Continue wait for read page, until expired
     }
 
     @Override
@@ -49,6 +49,8 @@ public class WebViewHandler extends WebViewClient {
     @Override
     public void onReceivedHttpError(
             WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+        LOGGER.debug("onReceivedHttpError, url=" + request);
+        this.mState = WebViewState.IDLE;
     }
 
     public void onTimer() {
