@@ -29,4 +29,5 @@ dependencies {
             [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.1']
     )
     compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile 'com.umeng.analytics:analytics:latest.integration'
 }
