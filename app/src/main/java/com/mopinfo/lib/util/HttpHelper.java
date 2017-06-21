@@ -1,5 +1,8 @@
 package com.mopinfo.lib.util;
 
+import android.os.Environment;
+import android.util.Log;
+
 import com.mopinfo.lib.common.ErrorCode;
 import com.mopinfo.lib.common.NutchException;
 import com.mopinfo.lib.log.ILogger;
@@ -10,7 +13,10 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class HttpHelper {
 
@@ -154,4 +160,65 @@ public class HttpHelper {
         return response;
     }
     */
+
+    public static void download(String serverAppUrl, String serverFileName, File path, String localFileName) throws Exception {
+        try {
+            int serverVersionCode = 0;
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(serverAppUrl + "/app/" + serverFileName)
+                    .build();
+            Log.d("nutch", String.format("download, file=%s, wait ...", serverFileName));
+
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            } else {
+                // Read file
+                InputStream is = null;
+                byte[] buffer = new byte[1024];
+                int len;
+                long currentTotalLen = 0L;
+                FileOutputStream fos = null;
+                try {
+                    is = response.body().byteStream();
+                    File file = new File(path, localFileName);
+                    if (file.exists()) {
+                        // If file exists, delete it
+                        file.delete();
+                    } else {
+                        file.createNewFile();
+                    }
+                    fos = new FileOutputStream(file);
+                    while ((len = is.read(buffer)) != -1) {
+                        fos.write(buffer, 0, len);
+                        currentTotalLen += len;
+                    }
+                    fos.flush();
+                    Log.d("nutch", String.format("download, write file=%s, size=%d", serverFileName, currentTotalLen));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (fos != null) {
+                                try {
+                                    fos.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new Exception();
+        }
+    }
 }
+

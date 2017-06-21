@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Load resource url list from server
  * Created by mop on 2017/6/17.
  */
 public class ResourceManager {
@@ -19,6 +20,8 @@ public class ResourceManager {
 
     private static ResourceManager s;
 
+    private String mHost;
+    private String mUId;
     private List<UrlItem> mUrlItemList;
 
     public static ResourceManager getInstance() {
@@ -28,6 +31,8 @@ public class ResourceManager {
     }
 
     private ResourceManager() {
+        this.mHost = null;
+        this.mUId = null;
         this.mUrlItemList = null;
     }
 
@@ -38,16 +43,21 @@ public class ResourceManager {
         }
     }
 
-    public void load() {
+    public void load(String host, String uid) {
+        if (this.mHost != null || this.mUId != null) {
+            return;
+        }
+
+        this.mHost = host;
+        this.mUId = uid;
+
         // Start thread to load url
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 try {
-                    String host = ConfigManager.getInstance().getHost();
-                    String uid = ConfigManager.getInstance().getUid();
-                    LOGGER.debug("load resource, host=" + host);
-                    UrlResponse rsp = ResourceHelper.getResource(host, uid);
+                    LOGGER.debug("load resource, host=" + mHost);
+                    UrlResponse rsp = ResourceHelper.getResource(mHost, mUId);
                     if (rsp != null && rsp.getUrlItemList() != null) {
                         setUrlList(rsp.getUrlItemList());
                         LOGGER.debug("load ok, rsp.urlItemList.size=" + rsp.getUrlItemList().size());
@@ -57,6 +67,7 @@ public class ResourceManager {
                 }
             }
         };
+
         Thread t = new Thread(r);
         t.start();
     }

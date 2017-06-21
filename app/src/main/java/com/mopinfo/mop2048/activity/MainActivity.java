@@ -40,12 +40,14 @@ public class MainActivity extends AppCompatActivity {
         ConfigManager.getInstance();
         ConfigManager.getInstance().load(mContext);
 
-        // Load resource
-        ResourceManager.getInstance().load();
-
         // Get uid and its userAgent
         mUId = getUid();
         String userAgent = UserAgentHelper.getUserAgent(mUId);
+
+        // Load resource
+        ResourceManager.getInstance().load(
+                ConfigManager.getInstance().getHost(),
+                ConfigManager.getInstance().getUid());
 
         // Prepare webview
         mWebView = (WebView) findViewById(R.id.webView);
