@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.log;
+package com.mopinfo.lib.log;
 
 /**
  * Created by mop on 2016/12/12.

@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.log;
+package com.mopinfo.lib.log;
 
 import android.util.Log;
 

@@ -2,8 +2,8 @@ package com.mopinfo.mop2048.config;
 
 import android.content.Context;
 
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
 
 import java.io.InputStream;
 import java.util.Properties;

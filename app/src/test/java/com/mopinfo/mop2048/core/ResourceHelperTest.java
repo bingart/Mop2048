@@ -1,6 +1,7 @@
 package com.mopinfo.mop2048.core;
 
-import com.mopinfo.mop2048.json.url.UrlResponse;
+import com.mopinfo.lib.json.resource.UrlResponse;
+import com.mopinfo.lib.logic.ResourceHelper;
 
 import junit.framework.Assert;
 

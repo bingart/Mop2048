@@ -1,18 +1,15 @@
 package com.mopinfo.mop2048.activity;
 
-import android.graphics.Bitmap;
-import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.mopinfo.mop2048.core.ResourceManager;
-import com.mopinfo.mop2048.json.url.UrlItem;
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
+import com.mopinfo.lib.logic.ResourceManager;
+import com.mopinfo.lib.json.resource.UrlItem;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
 
 /**
  * Created by feisun on 2016/9/23.

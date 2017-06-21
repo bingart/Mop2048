@@ -1,9 +1,9 @@
-package com.mopinfo.mop2048.util;
+package com.mopinfo.lib.util;
 
-import com.mopinfo.mop2048.common.ErrorCode;
-import com.mopinfo.mop2048.common.NutchException;
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
+import com.mopinfo.lib.common.ErrorCode;
+import com.mopinfo.lib.common.NutchException;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;

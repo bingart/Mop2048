@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.util;
+package com.mopinfo.lib.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

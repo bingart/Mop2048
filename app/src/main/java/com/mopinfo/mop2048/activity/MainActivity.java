@@ -11,11 +11,11 @@ import android.webkit.WebView;
 
 import com.mopinfo.mop2048.R;
 import com.mopinfo.mop2048.config.ConfigManager;
-import com.mopinfo.mop2048.core.ResourceManager;
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
-import com.mopinfo.mop2048.util.DateTimeHelper;
-import com.mopinfo.mop2048.util.UserAgentHelper;
+import com.mopinfo.lib.logic.ResourceManager;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
+import com.mopinfo.lib.util.DateTimeHelper;
+import com.mopinfo.lib.util.UserAgentHelper;
 import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends AppCompatActivity {

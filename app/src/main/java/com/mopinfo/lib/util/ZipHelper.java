@@ -1,7 +1,7 @@
-package com.mopinfo.mop2048.util;
+package com.mopinfo.lib.util;
 
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

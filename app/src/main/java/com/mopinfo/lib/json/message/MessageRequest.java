@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.json.message;
+package com.mopinfo.lib.json.message;
 
 /**
  * Created by mop on 2017/1/22.

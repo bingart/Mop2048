@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.util;
+package com.mopinfo.lib.util;
 
 /**
  * Created by mop on 2016/8/25.

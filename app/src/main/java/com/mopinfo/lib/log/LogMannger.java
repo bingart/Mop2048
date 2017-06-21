@@ -1,10 +1,10 @@
-package com.mopinfo.mop2048.log;
+package com.mopinfo.lib.log;
 
 import android.util.Log;
 
-import com.mopinfo.mop2048.common.NutchException;
+import com.mopinfo.lib.common.NutchException;
 import com.mopinfo.mop2048.config.ConfigManager;
-import com.mopinfo.mop2048.util.MessageHelper;
+import com.mopinfo.lib.util.MessageHelper;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

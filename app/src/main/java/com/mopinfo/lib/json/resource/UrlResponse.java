@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.json.url;
+package com.mopinfo.lib.json.resource;
 
 import java.util.List;
 

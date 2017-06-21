@@ -1,5 +1,7 @@
 package com.mopinfo.mop2048.util;
 
+import com.mopinfo.lib.util.UserAgentHelper;
+
 import junit.framework.Assert;
 
 import org.junit.Test;

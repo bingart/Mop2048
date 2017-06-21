@@ -1,11 +1,11 @@
-package com.mopinfo.mop2048.util;
+package com.mopinfo.lib.util;
 
-import com.mopinfo.mop2048.common.ErrorCode;
-import com.mopinfo.mop2048.common.NutchException;
-import com.mopinfo.mop2048.json.message.MessageRequest;
-import com.mopinfo.mop2048.json.message.MessageResponse;
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
+import com.mopinfo.lib.common.ErrorCode;
+import com.mopinfo.lib.common.NutchException;
+import com.mopinfo.lib.json.message.MessageRequest;
+import com.mopinfo.lib.json.message.MessageResponse;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
 
 /**
  * Created by mop on 2016/8/25.

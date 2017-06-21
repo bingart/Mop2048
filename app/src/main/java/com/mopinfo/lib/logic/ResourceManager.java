@@ -1,11 +1,11 @@
-package com.mopinfo.mop2048.core;
+package com.mopinfo.lib.logic;
 
-import com.mopinfo.mop2048.common.NutchException;
+import com.mopinfo.lib.common.NutchException;
 import com.mopinfo.mop2048.config.ConfigManager;
-import com.mopinfo.mop2048.json.url.UrlItem;
-import com.mopinfo.mop2048.json.url.UrlResponse;
-import com.mopinfo.mop2048.log.ILogger;
-import com.mopinfo.mop2048.log.LogMannger;
+import com.mopinfo.lib.json.resource.UrlItem;
+import com.mopinfo.lib.json.resource.UrlResponse;
+import com.mopinfo.lib.log.ILogger;
+import com.mopinfo.lib.log.LogMannger;
 
 import java.util.ArrayList;
 import java.util.List;

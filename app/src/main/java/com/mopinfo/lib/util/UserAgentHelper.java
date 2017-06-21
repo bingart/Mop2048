@@ -1,4 +1,4 @@
-package com.mopinfo.mop2048.util;
+package com.mopinfo.lib.util;
 
 /**
  * Created by feisun on 2017/6/19.
