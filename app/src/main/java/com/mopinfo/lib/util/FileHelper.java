@@ -56,7 +56,6 @@ public class FileHelper {
     public static String readFileConent(File path, String fileName) {
         FileInputStream fin = null;
         try {
-            String state = Environment.getExternalStorageState();
             File file = new File(path, fileName);
             if (file.exists()) {
                 fin = new FileInputStream(file);
@@ -78,5 +77,14 @@ public class FileHelper {
             }
         }
         return null;
+    }
+
+    public static boolean isExists(File path, String fileName) {
+        File file = new File(path, fileName);
+        if (file.exists()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

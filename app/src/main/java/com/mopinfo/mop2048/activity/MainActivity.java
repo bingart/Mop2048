@@ -1,22 +1,19 @@
 package com.mopinfo.mop2048.activity;
 
-import android.app.Activity;
 import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.webkit.WebView;
 
 import com.mopinfo.lib.logic.UIDHelper;
+import com.mopinfo.lib.logic.VersionManager;
 import com.mopinfo.mop2048.R;
 import com.mopinfo.mop2048.config.ConfigManager;
 import com.mopinfo.lib.logic.ResourceManager;
 import com.mopinfo.lib.log.ILogger;
 import com.mopinfo.lib.log.LogMannger;
-import com.mopinfo.lib.util.DateTimeHelper;
 import com.mopinfo.lib.util.UserAgentHelper;
 import com.umeng.analytics.MobclickAgent;
 
@@ -38,20 +35,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Load configuration
-        Context mContext = getApplicationContext();
-        ConfigManager.getInstance();
-        ConfigManager.getInstance().load(mContext);
+        Context context = getApplicationContext();
+        ConfigManager.getInstance().load(context);
+
+        // Check version
+        VersionManager.getInstance().start(ConfigManager.getInstance().getAppVersionHost(), this);
+        if (VersionManager.getInstance().isNewVersionFound()) {
+            //dialog();
+        } else {
+            //mUpdateManager.start();
+        }
+
+        // UMeng
+        String appKey = ConfigManager.getInstance().getAppKey();
+        String channelID = ConfigManager.getInstance().getChannelID();
+        MobclickAgent.UMAnalyticsConfig config = new MobclickAgent.UMAnalyticsConfig(this, appKey, channelID);
+        MobclickAgent.startWithConfigure(config);
 
         // Get uid and its userAgent
         mUId = UIDHelper.getUID(this, ConfigManager.getInstance().getUid());
         String userAgent = UserAgentHelper.getUserAgent(mUId);
 
         // Load resource
-        ResourceManager.getInstance().load(
-                ConfigManager.getInstance().getHost(),
-                ConfigManager.getInstance().getUid());
+        ResourceManager.getInstance().load(ConfigManager.getInstance().getAppResourceHost(), mUId);
 
-        // Prepare webview
+        // Webview
         mWebView = (WebView) findViewById(R.id.webView);
         if (mWebView.getSettings() != null) {
             mWebView.getSettings().setJavaScriptEnabled(true);
@@ -61,22 +69,19 @@ public class MainActivity extends AppCompatActivity {
         mWebViewHandler = new WebViewHandler(mWebView);
         mWebView.setWebViewClient(mWebViewHandler);
         mWebViewHandler.start();
-
-        String appKey = "57ea47b267e58e5c2a00074d";
-        String channelID = "DemoUChannelID";
-        MobclickAgent.UMAnalyticsConfig config = new MobclickAgent.UMAnalyticsConfig(this, appKey, channelID);
-        MobclickAgent.startWithConfigure(config);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        // UMeng
         MobclickAgent.onResume(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        // UMeng
         MobclickAgent.onPause(this);
     }
 }

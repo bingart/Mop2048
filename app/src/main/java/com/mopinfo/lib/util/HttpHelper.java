@@ -165,10 +165,14 @@ public class HttpHelper {
         try {
             int serverVersionCode = 0;
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(serverAppUrl + "/app/" + serverFileName)
-                    .build();
-            Log.d("nutch", String.format("download, file=%s, wait ...", serverFileName));
+            String url = null;
+            if (serverAppUrl.endsWith("/")) {
+                url = serverAppUrl + serverFileName;
+            } else {
+                url = serverAppUrl + "/" + serverFileName;
+            }
+            Request request = new Request.Builder().url(url).build();
+            LOGGER.debug(String.format("Download, url=%s, wait ...", url));
 
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
@@ -195,7 +199,7 @@ public class HttpHelper {
                         currentTotalLen += len;
                     }
                     fos.flush();
-                    Log.d("nutch", String.format("download, write file=%s, size=%d", serverFileName, currentTotalLen));
+                    LOGGER.debug(String.format("Download, write file=%s, size=%d", localFileName, currentTotalLen));
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
