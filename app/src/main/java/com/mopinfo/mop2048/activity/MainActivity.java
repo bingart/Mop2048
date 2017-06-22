@@ -1,5 +1,6 @@
 package com.mopinfo.mop2048.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.webkit.WebView;
 
+import com.mopinfo.lib.logic.UIDHelper;
 import com.mopinfo.mop2048.R;
 import com.mopinfo.mop2048.config.ConfigManager;
 import com.mopinfo.lib.logic.ResourceManager;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         ConfigManager.getInstance().load(mContext);
 
         // Get uid and its userAgent
-        mUId = getUid();
+        mUId = UIDHelper.getUID(this, ConfigManager.getInstance().getUid());
         String userAgent = UserAgentHelper.getUserAgent(mUId);
 
         // Load resource
@@ -58,20 +60,7 @@ public class MainActivity extends AppCompatActivity {
         }
         mWebViewHandler = new WebViewHandler(mWebView);
         mWebView.setWebViewClient(mWebViewHandler);
-
-        // Prepare timer
-        mHandler = new Handler();
-        mTask = new Runnable() {
-            @Override
-            public void run() {
-                // Next invoke
-                mHandler.postDelayed(this, 1000);
-                // Trigger
-                mWebViewHandler.onTimer();
-            }
-        };
-
-        mHandler.postDelayed(mTask, 1000);
+        mWebViewHandler.start();
 
         String appKey = "57ea47b267e58e5c2a00074d";
         String channelID = "DemoUChannelID";
@@ -89,31 +78,5 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
-    }
-
-    private String getUid() {
-        String uid = ConfigManager.getInstance().getUid();
-        try {
-            TelephonyManager t = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE));
-            String imei = t.getDeviceId();
-            if (imei != null) {
-                return uid + imei;
-            }
-        } catch (Exception ex) {
-            LOGGER.error("get imei error, " + ex.getMessage());
-        }
-
-        try {
-            WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            WifiInfo info = wifi.getConnectionInfo();
-            String mac = info.getMacAddress();
-            if (mac != null) {
-                return uid + mac;
-            }
-        } catch (Exception ex) {
-            LOGGER.error("get mac address error, " + ex.getMessage());
-        }
-
-        return uid + DateTimeHelper.getCurrentDateTimeString();
     }
 }

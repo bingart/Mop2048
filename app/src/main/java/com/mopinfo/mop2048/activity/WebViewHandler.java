@@ -1,5 +1,6 @@
 package com.mopinfo.mop2048.activity;
 
+import android.os.Handler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -12,11 +13,15 @@ import com.mopinfo.lib.log.ILogger;
 import com.mopinfo.lib.log.LogMannger;
 
 /**
+ * Self runnable web view handler.
  * Created by feisun on 2016/9/23.
  */
 public class WebViewHandler extends WebViewClient {
 
     private static ILogger LOGGER = LogMannger.getInstance().getLogger(WebViewHandler.class);
+
+    private Handler mHandler;
+    private Runnable mTask;
 
     private WebView mWebView;
     private WebViewState mState;
@@ -24,11 +29,28 @@ public class WebViewHandler extends WebViewClient {
     private int mLoadExpiredTime;
 
     public WebViewHandler(WebView webView) {
+
+        // Prepare timer
+        mHandler = new Handler();
+        mTask = new Runnable() {
+            @Override
+            public void run() {
+                // Next invoke
+                mHandler.postDelayed(this, 1000);
+                // Trigger
+                onTimer();
+            }
+        };
+
         this.mWebView = webView;
         this.mState = WebViewState.IDLE;
         this.mLoadTime = 0;
         this.mLoadExpiredTime = 30;
         LOGGER.info("created");
+    }
+
+    public void start() {
+        mHandler.postDelayed(mTask, 1000);
     }
 
     @Override
