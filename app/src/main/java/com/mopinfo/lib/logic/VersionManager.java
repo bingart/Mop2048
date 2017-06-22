@@ -61,6 +61,9 @@ public class VersionManager {
                     mVersionFileName);
             if (serverVersionStr != null) {
                 serverVesion = Integer.parseInt(serverVersionStr);
+                LOGGER.debug(String.format("isNewVersionFound, serverVersion=%d", serverVesion));
+            } else {
+                LOGGER.debug(String.format("isNewVersionFound, serverVersionStr is null"));
             }
         } catch (Exception ex) {
             LOGGER.error("isNewVersionFound error, ex=" + ex);
@@ -130,12 +133,18 @@ public class VersionManager {
                     HttpHelper.download(
                             mServerAppUrl, mVersionFileName,
                             Environment.getExternalStorageDirectory(), mVersionFileName);
+                    LOGGER.debug(String.format(
+                            "Download server version file ok, mServerAppUrl=%s, mVersionFileName=%s",
+                            mServerAppUrl, mVersionFileName));
 
                     // Get server version
                     String serverVersionStr = FileHelper.readFileConent(
                             Environment.getExternalStorageDirectory(),
                             mVersionFileName);
                     int serverVesion = Integer.parseInt(serverVersionStr);
+                    LOGGER.debug(String.format(
+                            "Get server version ok, serverVesion=%d",
+                            serverVesion));
 
                     // Download apk
                     String serverApkFileName = String.format("%s.%d.zip", mApkFileName, serverVesion);
@@ -144,6 +153,9 @@ public class VersionManager {
                         HttpHelper.download(
                                 mServerAppUrl, serverApkFileName,
                                 Environment.getExternalStorageDirectory(), localApkFileName);
+                        LOGGER.debug(String.format(
+                                "Download server apk file ok, serverApkFileName=%s, localApkFileName=%s",
+                                serverApkFileName, localApkFileName));
                     } else {
                         LOGGER.debug(String.format("Download ignored, local apk file exists, localApkFileName=%s", localApkFileName));
                     }

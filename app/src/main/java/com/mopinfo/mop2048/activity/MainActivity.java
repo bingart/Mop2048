@@ -2,6 +2,7 @@ package com.mopinfo.mop2048.activity;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.webkit.WebView;
 
 import com.mopinfo.lib.logic.UIDHelper;
 import com.mopinfo.lib.logic.VersionManager;
+import com.mopinfo.lib.util.FileHelper;
 import com.mopinfo.mop2048.R;
 import com.mopinfo.mop2048.config.ConfigManager;
 import com.mopinfo.lib.logic.ResourceManager;
@@ -34,6 +36,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Write test
+        FileHelper.verifyStoragePermissions(this);
+        FileHelper.writeFileContent(Environment.getExternalStorageDirectory(), "aaa.txt", "aaaaa");
+        String content = FileHelper.readFileConent(Environment.getExternalStorageDirectory(), "aaa.txt");
+        if (content != null && content.equalsIgnoreCase("aaaaa")) {
+            LOGGER.debug("verifyStoragePermissions ok");
+        } else {
+            LOGGER.error("verifyStoragePermissions error");
+        }
+
         // Load configuration
         Context context = getApplicationContext();
         ConfigManager.getInstance().load(context);
@@ -43,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         if (VersionManager.getInstance().isNewVersionFound()) {
             // dialog();
         } else {
-            // VersionManager.getInstance().start();
+            VersionManager.getInstance().start();
         }
 
         // UMeng

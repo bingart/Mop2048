@@ -199,9 +199,9 @@ public class HttpHelper {
                         currentTotalLen += len;
                     }
                     fos.flush();
-                    LOGGER.debug(String.format("Download, write file=%s, size=%d", localFileName, currentTotalLen));
+                    LOGGER.debug(String.format("Download ok, localFileName=%s, size=%d", localFileName, currentTotalLen));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error(String.format("Download error, localFileName=%s, ex=%s", localFileName, e.getMessage()));
                 } finally {
                     if (is != null) {
                         try {
