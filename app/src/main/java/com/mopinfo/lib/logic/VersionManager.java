@@ -1,14 +1,21 @@
 package com.mopinfo.lib.logic;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 
 import com.mopinfo.lib.log.ILogger;
 import com.mopinfo.lib.log.LogMannger;
 import com.mopinfo.lib.util.FileHelper;
 import com.mopinfo.lib.util.HttpHelper;
+
+import java.io.File;
 
 /**
  * Download version file and apk file.
@@ -74,6 +81,7 @@ public class VersionManager {
             String apkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
             if (FileHelper.isExistsInternal(mContext, apkFileName)) {
                 LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", apkFileName));
+                notifyAndInstall(serverVesion);
                 return true;
             } else {
                 LOGGER.debug(String.format("isNewVersionFound, file NOT exists, ApkFileName=%s", apkFileName));
@@ -163,5 +171,38 @@ public class VersionManager {
         };
         Thread t = new Thread(r);
         t.start();
+    }
+
+    /**
+     * The new version notification dialog.
+     */
+    private void notifyAndInstall(final int serverVersion) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage("发现新版本，是否更新?");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String localApkFileName = String.format("%s.%d.apk", mApkFileName, serverVersion);
+                String path = mContext.getFilesDir().getAbsolutePath() + "/" + localApkFileName;
+                File file = new File(path);
+                if (!file.exists()) {
+                    LOGGER.debug("notifyAndInstall error, apk file NOT found, path=" + path);
+                    return;
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(
+                        Uri.fromFile(file),
+                        "application/vnd.android.package-archive");
+                mContext.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }

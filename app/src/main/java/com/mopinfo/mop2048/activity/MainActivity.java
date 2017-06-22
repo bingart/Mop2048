@@ -39,9 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Check version
         VersionManager.getInstance().open(ConfigManager.getInstance().getAppVersionHost(), this);
-        if (VersionManager.getInstance().isNewVersionFound()) {
-            // dialog();
-        } else {
+        if (!VersionManager.getInstance().isNewVersionFound()) {
+            // Server version ignored or local apk file N/A, check server
             VersionManager.getInstance().start();
         }
 
