@@ -42,32 +42,45 @@ public class VersionManager {
         mRunning = false;
     }
 
-    public boolean isNewVersionFound() {
-        try {
-            // Get current version
-            PackageInfo pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-            int currentVesion = pInfo.versionCode;
+    public void open(String serverAppUrl, Context context) {
+        mContext = context;
+        mApkFileName = getApkName();
+        mServerAppUrl = serverAppUrl;
+        mVersionFileName = String.format("version.%s.txt", mApkFileName);
+    }
 
+    public boolean isNewVersionFound() {
+        // Get current version
+        int currentVesion = getVersionCode();
+
+        int serverVesion = 0;
+        try {
             // Get server version
             String serverVersionStr = FileHelper.readFileConent(
                     Environment.getExternalStorageDirectory(),
                     mVersionFileName);
-            int serverVesion = Integer.parseInt(serverVersionStr);
-
-            // Compare server version and current version
-            if (serverVesion > currentVesion) {
-                // Check apk version file
-                String apkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
-                if (FileHelper.isExists(Environment.getExternalStorageDirectory(), apkFileName)) {
-                    LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", apkFileName));
-                    return true;
-                } else {
-                    LOGGER.debug(String.format("isNewVersionFound, file NOT exists, ApkFileName=%s", apkFileName));
-                }
+            if (serverVersionStr != null) {
+                serverVesion = Integer.parseInt(serverVersionStr);
             }
         } catch (Exception ex) {
             LOGGER.error("isNewVersionFound error, ex=" + ex);
         }
+
+        // Compare server version and current version
+        if (serverVesion > currentVesion) {
+            // Check apk version file
+            String apkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
+            if (FileHelper.isExists(Environment.getExternalStorageDirectory(), apkFileName)) {
+                LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", apkFileName));
+                return true;
+            } else {
+                LOGGER.debug(String.format("isNewVersionFound, file NOT exists, ApkFileName=%s", apkFileName));
+            }
+        } else {
+            LOGGER.debug(String.format(
+                    "isNewVersionFound, ignored, serverVesion=%d, currentVesion=%d", serverVesion, currentVesion));
+        }
+
         return false;
     }
 
@@ -89,20 +102,25 @@ public class VersionManager {
         return null;
     }
 
-    public synchronized void start(
-            String serverAppUrl,
-            Context context) {
+    public int getVersionCode() {
+        try {
+            String packageName = mContext.getPackageName();
+            PackageManager pm = mContext.getPackageManager();
+            PackageInfo pInfo = pm.getPackageInfo(packageName, 0);
+            int currentVesion = pInfo.versionCode;
+            return currentVesion;
+        } catch (Exception ex) {
+            LOGGER.error("getVersionCode error, ex=" + ex);
+            return 10000;
+        }
+    }
+
+    public synchronized void start() {
         if (mRunning) {
             return;
         } else {
             mRunning = true;
         }
-
-        mContext = context;
-        mApkFileName = getApkName();
-
-        mServerAppUrl = serverAppUrl;
-        mVersionFileName = String.format("version.%s.txt", mApkFileName);
 
         Runnable r = new Runnable() {
             @Override

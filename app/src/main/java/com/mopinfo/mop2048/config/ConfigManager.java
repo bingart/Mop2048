@@ -15,18 +15,13 @@ public class ConfigManager {
 
     ILogger LOGGER = LogMannger.getInstance().getLogger(ConfigManager.class);
 
-    public static final String DEFAULT_UID = "U";
-    public static final String DEFAULT_APP_VERSION_HOST = "http://www.mopinfo.com/app";
-    public static final String DEFAULT_APP_RESOURCE_HOST = "http://www.mopinfo.com/service/resource.php";
-    private static final String DEFAULT_MESSAGE_SERVER_HOST = "http://message.mopinfo.com/";
-
     private Properties mProperties;
 
-    private String uid = DEFAULT_UID;
-    private String appVersionHost = DEFAULT_APP_VERSION_HOST;
-    private String appResourceHost = DEFAULT_APP_RESOURCE_HOST;
+    private String uid = null;
+    private String appVersionHost = null;
+    private String appResourceHost = null;
     private int usingMessageServer = 0;
-    private String messageServerHost = DEFAULT_MESSAGE_SERVER_HOST;
+    private String messageServerHost = null;
     private String appKey = null;
     private String channelID = null;
 
@@ -53,7 +48,7 @@ public class ConfigManager {
         mProperties = getProperties(context);
 
         uid = get("uid");
-        appVersionHost = get("appVersionHostHost");
+        appVersionHost = get("appVersionHost");
         appResourceHost = get("appResourceHost");
         usingMessageServer = getInt("usingMessageServer", 0);
         messageServerHost = get("messageServerHost");

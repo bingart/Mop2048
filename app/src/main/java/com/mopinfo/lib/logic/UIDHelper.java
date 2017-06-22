@@ -34,12 +34,12 @@ public class UIDHelper {
             WifiInfo info = wifi.getConnectionInfo();
             String mac = info.getMacAddress();
             if (mac != null) {
-                return defaultUID + mac;
+                return defaultUID + mac.replaceAll(":", "");
             }
         } catch (Exception ex) {
             LOGGER.error("get mac address error, " + ex.getMessage());
         }
 
-        return defaultUID + DateTimeHelper.getCurrentDateTimeString();
+        return defaultUID;
     }
 }

@@ -39,11 +39,11 @@ public class MainActivity extends AppCompatActivity {
         ConfigManager.getInstance().load(context);
 
         // Check version
-        VersionManager.getInstance().start(ConfigManager.getInstance().getAppVersionHost(), this);
+        VersionManager.getInstance().open(ConfigManager.getInstance().getAppVersionHost(), this);
         if (VersionManager.getInstance().isNewVersionFound()) {
-            //dialog();
+            // dialog();
         } else {
-            //mUpdateManager.start();
+            // VersionManager.getInstance().start();
         }
 
         // UMeng
