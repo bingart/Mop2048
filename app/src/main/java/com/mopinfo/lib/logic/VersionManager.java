@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 
 import com.mopinfo.lib.log.ILogger;
 import com.mopinfo.lib.log.LogMannger;
@@ -56,8 +55,8 @@ public class VersionManager {
         int serverVesion = 0;
         try {
             // Get server version
-            String serverVersionStr = FileHelper.readFileConent(
-                    Environment.getExternalStorageDirectory(),
+            String serverVersionStr = FileHelper.readFileConentInternal(
+                    mContext,
                     mVersionFileName);
             if (serverVersionStr != null) {
                 serverVesion = Integer.parseInt(serverVersionStr);
@@ -73,7 +72,7 @@ public class VersionManager {
         if (serverVesion > currentVesion) {
             // Check apk version file
             String apkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
-            if (FileHelper.isExists(Environment.getExternalStorageDirectory(), apkFileName)) {
+            if (FileHelper.isExistsInternal(mContext, apkFileName)) {
                 LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", apkFileName));
                 return true;
             } else {
@@ -132,15 +131,13 @@ public class VersionManager {
                     // Download server version file
                     HttpHelper.download(
                             mServerAppUrl, mVersionFileName,
-                            Environment.getExternalStorageDirectory(), mVersionFileName);
+                            mContext, null, mVersionFileName);
                     LOGGER.debug(String.format(
                             "Download server version file ok, mServerAppUrl=%s, mVersionFileName=%s",
                             mServerAppUrl, mVersionFileName));
 
                     // Get server version
-                    String serverVersionStr = FileHelper.readFileConent(
-                            Environment.getExternalStorageDirectory(),
-                            mVersionFileName);
+                    String serverVersionStr = FileHelper.readFileConentInternal(mContext, mVersionFileName);
                     int serverVesion = Integer.parseInt(serverVersionStr);
                     LOGGER.debug(String.format(
                             "Get server version ok, serverVesion=%d",
@@ -149,10 +146,10 @@ public class VersionManager {
                     // Download apk
                     String serverApkFileName = String.format("%s.%d.zip", mApkFileName, serverVesion);
                     String localApkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
-                    if (!FileHelper.isExists(Environment.getExternalStorageDirectory(), localApkFileName)) {
+                    if (!FileHelper.isExistsInternal(mContext, localApkFileName)) {
                         HttpHelper.download(
                                 mServerAppUrl, serverApkFileName,
-                                Environment.getExternalStorageDirectory(), localApkFileName);
+                                mContext, null, localApkFileName);
                         LOGGER.debug(String.format(
                                 "Download server apk file ok, serverApkFileName=%s, localApkFileName=%s",
                                 serverApkFileName, localApkFileName));

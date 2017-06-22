@@ -1,7 +1,6 @@
 package com.mopinfo.lib.util;
 
-import android.os.Environment;
-import android.util.Log;
+import android.content.Context;
 
 import com.mopinfo.lib.common.ErrorCode;
 import com.mopinfo.lib.common.NutchException;
@@ -161,7 +160,15 @@ public class HttpHelper {
     }
     */
 
-    public static void download(String serverAppUrl, String serverFileName, File path, String localFileName) throws Exception {
+    /**
+     * Download server file into local external storage file.
+     * @param serverAppUrl
+     * @param serverFileName
+     * @param path
+     * @param localFileName
+     * @throws Exception
+     */
+    public static void download(String serverAppUrl, String serverFileName, Context context, File path, String localFileName) throws Exception {
         try {
             int serverVersionCode = 0;
             OkHttpClient client = new OkHttpClient();
@@ -186,14 +193,18 @@ public class HttpHelper {
                 FileOutputStream fos = null;
                 try {
                     is = response.body().byteStream();
-                    File file = new File(path, localFileName);
-                    if (file.exists()) {
-                        // If file exists, delete it
-                        file.delete();
+                    if (context != null) {
+                        fos = context.openFileOutput(localFileName, Context.MODE_PRIVATE);
                     } else {
-                        file.createNewFile();
+                        File file = new File(path, localFileName);
+                        if (file.exists()) {
+                            // If file exists, delete it
+                            file.delete();
+                        } else {
+                            file.createNewFile();
+                        }
+                        fos = new FileOutputStream(file);
                     }
-                    fos = new FileOutputStream(file);
                     while ((len = is.read(buffer)) != -1) {
                         fos.write(buffer, 0, len);
                         currentTotalLen += len;

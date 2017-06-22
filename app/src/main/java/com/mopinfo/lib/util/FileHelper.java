@@ -2,10 +2,9 @@ package com.mopinfo.lib.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
 import com.mopinfo.lib.log.ILogger;
 import com.mopinfo.lib.log.LogMannger;
@@ -51,7 +50,7 @@ public class FileHelper {
     }
 
     /**
-     * Write string to file.
+     * Write string to external storage file..
      * @param path
      * @param fileName
      * @param content
@@ -59,10 +58,8 @@ public class FileHelper {
     public static void writeFileContent(File path, String fileName, String content) {
         FileOutputStream fos = null;
         try {
-            String state = Environment.getExternalStorageState();
             File file = new File(path, fileName);
             if (file.exists()) {
-                // 如果文件存在 则删除
                 file.delete();
             } else {
                 file.createNewFile();
@@ -85,7 +82,32 @@ public class FileHelper {
     }
 
     /**
-     * Read string from file.
+     * Write string to internal storage file.
+     * @param fileName
+     * @param content
+     */
+    public static void writeFileContentInternal(Context context, String fileName, String content) {
+        FileOutputStream fos = null;
+        try {
+            fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            byte[] bytes = content.getBytes(Charset.forName("UTF8"));
+            fos.write(bytes);
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Read string from external storage file.
      * @param path
      * @param fileName
      * @return
@@ -116,6 +138,41 @@ public class FileHelper {
         return null;
     }
 
+    /**
+     * string from internal storage file.
+     * @param context
+     * @param fileName
+     * @return
+     */
+    public static String readFileConentInternal(Context context, String fileName) {
+        FileInputStream fin = null;
+        try {
+            fin = context.openFileInput(fileName);
+            int length = fin.available();
+            byte [] buffer = new byte[length];
+            fin.read(buffer);
+            String str = new String(buffer, 0, length, "UTF-8");
+            return str;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fin != null) {
+                try {
+                    fin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if file exists in external storage.
+     * @param path
+     * @param fileName
+     * @return
+     */
     public static boolean isExists(File path, String fileName) {
         File file = new File(path, fileName);
         if (file.exists()) {
@@ -123,5 +180,16 @@ public class FileHelper {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check if file exists in internal storage.
+     * @param fileName
+     * @return
+     */
+    public static boolean isExistsInternal(Context context, String fileName) {
+        String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
+        File file = new File(path);
+        return file.exists();
     }
 }
