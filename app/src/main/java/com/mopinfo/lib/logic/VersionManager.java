@@ -30,6 +30,7 @@ public class VersionManager {
     private Context mContext;
 
     private String mServerAppUrl;
+    private String mFilePath;
     private String mVersionFileName;
     private String mApkFileName;
 
@@ -50,9 +51,13 @@ public class VersionManager {
 
     public void open(String serverAppUrl, Context context) {
         mContext = context;
-        mApkFileName = getApkName();
         mServerAppUrl = serverAppUrl;
-        mVersionFileName = String.format("version.%s.txt", mApkFileName);
+        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        // mFilePath = mContext.getFilesDir().getAbsolutePath();
+        String apkName = getApkName();
+        mVersionFileName = String.format("version.%s.txt", apkName);
+        mApkFileName = String.format("%s.apk", apkName);
+        LOGGER.info(String.format("open, mApkFileName=%s, mVersionFileName=%s", mApkFileName, mVersionFileName));
     }
 
     public boolean isNewVersionFound() {
@@ -62,12 +67,10 @@ public class VersionManager {
         int serverVesion = 0;
         try {
             // Get server version
-            String serverVersionStr = FileHelper.readFileConentInternal(
-                    mContext,
-                    mVersionFileName);
+            String serverVersionStr = FileHelper.readFileConent(mFilePath, mVersionFileName);
             if (serverVersionStr != null) {
                 serverVesion = Integer.parseInt(serverVersionStr);
-                LOGGER.debug(String.format("isNewVersionFound, serverVersion=%d", serverVesion));
+                LOGGER.info(String.format("isNewVersionFound, serverVersion=%d", serverVesion));
             } else {
                 LOGGER.debug(String.format("isNewVersionFound, serverVersionStr is null"));
             }
@@ -78,13 +81,12 @@ public class VersionManager {
         // Compare server version and current version
         if (serverVesion > currentVesion) {
             // Check apk version file
-            String apkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
-            if (FileHelper.isExistsInternal(mContext, apkFileName)) {
-                LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", apkFileName));
+            if (FileHelper.isExists(mFilePath, mApkFileName)) {
+                LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", mApkFileName));
                 notifyAndInstall(serverVesion);
                 return true;
             } else {
-                LOGGER.debug(String.format("isNewVersionFound, file NOT exists, ApkFileName=%s", apkFileName));
+                LOGGER.debug(String.format("isNewVersionFound, file NOT exists, ApkFileName=%s", mApkFileName));
             }
         } else {
             LOGGER.debug(String.format(
@@ -138,34 +140,34 @@ public class VersionManager {
                 try {
                     // Download server version file
                     HttpHelper.download(
-                            mServerAppUrl, mVersionFileName,
-                            mContext, null, mVersionFileName);
-                    LOGGER.debug(String.format(
+                            mServerAppUrl, mVersionFileName, mFilePath, mVersionFileName);
+                    LOGGER.info(String.format(
                             "Download server version file ok, mServerAppUrl=%s, mVersionFileName=%s",
                             mServerAppUrl, mVersionFileName));
 
                     // Get server version
-                    String serverVersionStr = FileHelper.readFileConentInternal(mContext, mVersionFileName);
+                    String serverVersionStr = FileHelper.readFileConent(mFilePath, mVersionFileName);
+                    LOGGER.info(String.format(
+                            "Get server version ok, serverVersionStr=%s",
+                            serverVersionStr));
                     int serverVesion = Integer.parseInt(serverVersionStr);
-                    LOGGER.debug(String.format(
+                    LOGGER.info(String.format(
                             "Get server version ok, serverVesion=%d",
                             serverVesion));
 
                     // Download apk
-                    String serverApkFileName = String.format("%s.%d.zip", mApkFileName, serverVesion);
-                    String localApkFileName = String.format("%s.%d.apk", mApkFileName, serverVesion);
-                    if (!FileHelper.isExistsInternal(mContext, localApkFileName)) {
-                        HttpHelper.download(
-                                mServerAppUrl, serverApkFileName,
-                                mContext, null, localApkFileName);
-                        LOGGER.debug(String.format(
-                                "Download server apk file ok, serverApkFileName=%s, localApkFileName=%s",
-                                serverApkFileName, localApkFileName));
+                    if (!FileHelper.isExists(mFilePath, mApkFileName)) {
+                        long length = HttpHelper.download(
+                                mServerAppUrl, mApkFileName,
+                                mFilePath, mApkFileName);
+                        LOGGER.info(String.format(
+                                "Download server apk file ok, serverApkFileName=%s, localApkFileName=%s, length=%d",
+                                mApkFileName, mApkFileName, length));
                     } else {
-                        LOGGER.debug(String.format("Download ignored, local apk file exists, localApkFileName=%s", localApkFileName));
+                        LOGGER.error(String.format("Download ignored, local apk file exists, localApkFileName=%s", mApkFileName));
                     }
                 } catch (Exception ex) {
-                    LOGGER.error("Download error, ex=" + ex.getMessage());
+                    LOGGER.error("Download error, ex=" + ex.getStackTrace());
                 }
             }
         };
@@ -183,13 +185,20 @@ public class VersionManager {
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String localApkFileName = String.format("%s.%d.apk", mApkFileName, serverVersion);
-                String path = mContext.getFilesDir().getAbsolutePath() + "/" + localApkFileName;
+                String path = mFilePath + "/" + mApkFileName;
                 File file = new File(path);
                 if (!file.exists()) {
-                    LOGGER.debug("notifyAndInstall error, apk file NOT found, path=" + path);
+                    LOGGER.error("notifyAndInstall error, apk file NOT found, path=" + path);
                     return;
+                } else {
+                    int length = (int) file.length();
+                    LOGGER.info(String.format("notifyAndInstall ok, apk file path=%s, length=%d", path, length));
                 }
+
+                // Schedule file to be deleted on exit
+                FileHelper.deleteOnExit(mFilePath, mApkFileName);
+
+                // Update
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(
                         Uri.fromFile(file),

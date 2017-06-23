@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
  */
 public class FileHelper {
 
-    ILogger LOGGER = LogMannger.getInstance().getLogger(FileHelper.class);
+    private static ILogger LOGGER = LogMannger.getInstance().getLogger(FileHelper.class);
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -82,11 +82,44 @@ public class FileHelper {
     }
 
     /**
+     * Write string to external storage file..
+     * @param filePath
+     * @param fileName
+     * @param content
+     */
+    public static void writeFileContent(String filePath, String fileName, String content) {
+        FileOutputStream fos = null;
+        try {
+            String fullPath = String.format("%s/%s", filePath, fileName);
+            File file = new File(fullPath);
+            if (file.exists()) {
+                file.delete();
+            } else {
+                file.createNewFile();
+            }
+            fos = new FileOutputStream(file);
+            byte[] bytes = content.getBytes(Charset.forName("UTF8"));
+            fos.write(bytes);
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
      * Write string to internal storage file.
      * @param fileName
      * @param content
      */
-    public static void writeFileContentInternal(Context context, String fileName, String content) {
+    public static void writeFileContent(Context context, String fileName, String content) {
         FileOutputStream fos = null;
         try {
             fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -139,12 +172,45 @@ public class FileHelper {
     }
 
     /**
+     * Read string from external storage file.
+     * @param filePath
+     * @param fileName
+     * @return
+     */
+    public static String readFileConent(String filePath, String fileName) {
+        FileInputStream fin = null;
+        try {
+            String fullPath = String.format("%s/%s", filePath, fileName);
+            File file = new File(fullPath);
+            if (file.exists()) {
+                fin = new FileInputStream(file);
+                int length = fin.available();
+                byte [] buffer = new byte[length];
+                fin.read(buffer);
+                String str = new String(buffer, 0, length, "UTF-8");
+                return str;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fin != null) {
+                try {
+                    fin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * string from internal storage file.
      * @param context
      * @param fileName
      * @return
      */
-    public static String readFileConentInternal(Context context, String fileName) {
+    public static String readFileConent(Context context, String fileName) {
         FileInputStream fin = null;
         try {
             fin = context.openFileInput(fileName);
@@ -183,13 +249,39 @@ public class FileHelper {
     }
 
     /**
+     * Check if file exists
+     * @param filePath
+     * @param fileName
+     * @return
+     */
+    public static boolean isExists(String filePath, String fileName) {
+        String fullPath = String.format("%s/%s", filePath, fileName);
+        File file = new File(fullPath);
+        return file.exists();
+    }
+
+    /**
      * Check if file exists in internal storage.
      * @param fileName
      * @return
      */
-    public static boolean isExistsInternal(Context context, String fileName) {
+    public static boolean isExists(Context context, String fileName) {
         String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
         File file = new File(path);
         return file.exists();
+    }
+
+    public static void deleteOnExit(String filePath, String fileName) {
+        String fullPath = String.format("%s/%s", filePath, fileName);
+        File file = new File(fullPath);
+        file.deleteOnExit();
+        LOGGER.info(String.format("File deletedOnExit, fileName=%s", fileName));
+    }
+
+    public static void deleteOnExit(Context context, String fileName) {
+        String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
+        File file = new File(path);
+        file.deleteOnExit();
+        LOGGER.info(String.format("File deletedOnExit, fileName=%s", fileName));
     }
 }

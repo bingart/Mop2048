@@ -21,10 +21,17 @@ public class HttpHelper {
 
     private static ILogger LOGGER = LogMannger.getInstance().getLogger(HttpHelper.class);
 
+    /**
+     * HTTP GET.
+     * @param url
+     * @param clazz
+     * @param <TRSP>
+     * @return instance of TRSP
+     * @throws IOException
+     * @throws NutchException
+     */
     public static <TRSP> TRSP get(String url, Class<TRSP> clazz) throws IOException, NutchException {
-
         TRSP response = null;
-
         Response okResponse = null;
         try {
             OkHttpClient client = new OkHttpClient();
@@ -60,10 +67,20 @@ public class HttpHelper {
         return response;
     }
 
+    /**
+     * HTTP POST.
+     * @param url
+     * @param request
+     * @param clazz
+     * @param isCrypt
+     * @param <TREQ>
+     * @param <TRSP>
+     * @return instance of TRSP
+     * @throws IOException
+     * @throws NutchException
+     */
     public static <TREQ, TRSP> TRSP postRequest(String url, TREQ request, Class<TRSP> clazz, boolean isCrypt) throws IOException, NutchException {
-
         TRSP response = null;
-
         String reqContentString = null;
         if (isCrypt) {
             reqContentString = CryptHelper.<TREQ>encode(request);
@@ -110,9 +127,7 @@ public class HttpHelper {
 
     /*
     public static <TRSP> TRSP postRequestWithMap(String url, HashMap<String, String> dict, Class<TRSP> clazz) throws IOException, NutchException {
-
         TRSP response = null;
-
         Response okResponse = null;
         try {
             OkHttpClient client = new OkHttpClient();
@@ -164,11 +179,12 @@ public class HttpHelper {
      * Download server file into local external storage file.
      * @param serverAppUrl
      * @param serverFileName
-     * @param path
+     * @param localFilePath
      * @param localFileName
+     * @return length of downloaded file if ok
      * @throws Exception
      */
-    public static void download(String serverAppUrl, String serverFileName, Context context, File path, String localFileName) throws Exception {
+    public static long download(String serverAppUrl, String serverFileName, String localFilePath, String localFileName) throws Exception {
         try {
             int serverVersionCode = 0;
             OkHttpClient client = new OkHttpClient();
@@ -187,30 +203,28 @@ public class HttpHelper {
             } else {
                 // Read file
                 InputStream is = null;
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[64];
                 int len;
-                long currentTotalLen = 0L;
+                long totalLen = 0L;
                 FileOutputStream fos = null;
                 try {
                     is = response.body().byteStream();
-                    if (context != null) {
-                        fos = context.openFileOutput(localFileName, Context.MODE_PRIVATE);
+                    String filePath = String.format("%s/%s", localFilePath, localFileName);
+                    File file = new File(filePath);
+                    if (file.exists()) {
+                        // If file exists, delete it
+                        file.delete();
                     } else {
-                        File file = new File(path, localFileName);
-                        if (file.exists()) {
-                            // If file exists, delete it
-                            file.delete();
-                        } else {
-                            file.createNewFile();
-                        }
-                        fos = new FileOutputStream(file);
+                        file.createNewFile();
                     }
+                    fos = new FileOutputStream(file);
                     while ((len = is.read(buffer)) != -1) {
                         fos.write(buffer, 0, len);
-                        currentTotalLen += len;
+                        totalLen += len;
                     }
                     fos.flush();
-                    LOGGER.debug(String.format("Download ok, localFileName=%s, size=%d", localFileName, currentTotalLen));
+                    LOGGER.info(String.format("Download ok, localFileName=%s, size=%d", localFileName, totalLen));
+                    return totalLen;
                 } catch (IOException e) {
                     LOGGER.error(String.format("Download error, localFileName=%s, ex=%s", localFileName, e.getMessage()));
                 } finally {
@@ -234,6 +248,8 @@ public class HttpHelper {
         } catch (IOException e) {
             throw new Exception();
         }
+
+        return 0;
     }
 }
 

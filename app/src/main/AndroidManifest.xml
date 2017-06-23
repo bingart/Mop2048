@@ -27,6 +27,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <meta-data android:value="57ea47b267e58e5c2a00074d" android:name="UMENG_APPKEY"></meta-data>
-    <meta-data android:value="DemoUChannelID" android:name="UMENG_CHANNEL"/>
+    <meta-data android:value="DemoUChannelID" android:name="UMENG_CHANNEL"></meta-data>
 
 </manifest>
