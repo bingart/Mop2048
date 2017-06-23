@@ -20,7 +20,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             def file = output.outputFile
-            output.outputFile = new File(file.parent, "mop2048.apk")
+            output.outputFile = new File(file.parent, "mop2048." + defaultConfig.versionCode + ".apk")
         }
     }
 }

@@ -33,6 +33,7 @@ public class VersionManager {
     private String mFilePath;
     private String mVersionFileName;
     private String mApkFileName;
+    private String mApkVersionFileName;
 
     private boolean mRunning;
 
@@ -46,6 +47,7 @@ public class VersionManager {
         mServerAppUrl = null;
         mVersionFileName = null;
         mApkFileName = null;
+        mApkVersionFileName = null;
         mRunning = false;
     }
 
@@ -57,6 +59,7 @@ public class VersionManager {
         String apkName = getApkName();
         mVersionFileName = String.format("version.%s.txt", apkName);
         mApkFileName = String.format("%s.apk", apkName);
+        mApkVersionFileName = null;
         LOGGER.info(String.format("open, mApkFileName=%s, mVersionFileName=%s", mApkFileName, mVersionFileName));
     }
 
@@ -81,12 +84,13 @@ public class VersionManager {
         // Compare server version and current version
         if (serverVesion > currentVesion) {
             // Check apk version file
-            if (FileHelper.isExists(mFilePath, mApkFileName)) {
-                LOGGER.debug(String.format("isNewVersionFound, file exists, ApkFileName=%s", mApkFileName));
-                notifyAndInstall(serverVesion);
+            mApkVersionFileName = mApkFileName.replaceAll(".apk", String.format(".%d.apk", serverVesion));
+            if (FileHelper.isExists(mFilePath, mApkVersionFileName)) {
+                LOGGER.debug(String.format("isNewVersionFound, file exists, mApkVersionFileName=%s", mApkVersionFileName));
+                notifyAndInstall(mFilePath, mApkVersionFileName);
                 return true;
             } else {
-                LOGGER.debug(String.format("isNewVersionFound, file NOT exists, ApkFileName=%s", mApkFileName));
+                LOGGER.debug(String.format("isNewVersionFound, file NOT exists, mApkVersionFileName=%s", mApkVersionFileName));
             }
         } else {
             LOGGER.debug(String.format(
@@ -156,15 +160,16 @@ public class VersionManager {
                             serverVesion));
 
                     // Download apk
-                    if (!FileHelper.isExists(mFilePath, mApkFileName)) {
+                    mApkVersionFileName = mApkFileName.replaceAll(".apk", String.format(".%s.apk", serverVesion));
+                    if (!FileHelper.isExists(mFilePath, mApkVersionFileName)) {
                         long length = HttpHelper.download(
-                                mServerAppUrl, mApkFileName,
-                                mFilePath, mApkFileName);
+                                mServerAppUrl, mApkVersionFileName,
+                                mFilePath, mApkVersionFileName);
                         LOGGER.info(String.format(
-                                "Download server apk file ok, serverApkFileName=%s, localApkFileName=%s, length=%d",
-                                mApkFileName, mApkFileName, length));
+                                "Download server apk file ok, mApkVersionFileName=%s, length=%d",
+                                mApkVersionFileName, length));
                     } else {
-                        LOGGER.error(String.format("Download ignored, local apk file exists, localApkFileName=%s", mApkFileName));
+                        LOGGER.error(String.format("Download ignored, local apk file exists, mApkVersionFileName=%s", mApkVersionFileName));
                     }
                 } catch (Exception ex) {
                     LOGGER.error("Download error, ex=" + ex.getStackTrace());
@@ -178,25 +183,24 @@ public class VersionManager {
     /**
      * The new version notification dialog.
      */
-    private void notifyAndInstall(final int serverVersion) {
+    private void notifyAndInstall(final String apkFilePath, final String apkFileName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage("发现新版本，是否更新?");
         builder.setTitle("提示");
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String path = mFilePath + "/" + mApkFileName;
-                File file = new File(path);
+                File file = new File(apkFilePath, apkFileName);
                 if (!file.exists()) {
-                    LOGGER.error("notifyAndInstall error, apk file NOT found, path=" + path);
+                    LOGGER.error("notifyAndInstall error, apk file NOT found, path=" + apkFileName);
                     return;
                 } else {
                     int length = (int) file.length();
-                    LOGGER.info(String.format("notifyAndInstall ok, apk file path=%s, length=%d", path, length));
+                    LOGGER.info(String.format("notifyAndInstall ok, apk file path=%s, length=%d", apkFileName, length));
                 }
 
                 // Schedule file to be deleted on exit
-                FileHelper.deleteOnExit(mFilePath, mApkFileName);
+                FileHelper.deleteOnExit(apkFilePath, apkFileName);
 
                 // Update
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -209,6 +213,10 @@ public class VersionManager {
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // Delete it
+                FileHelper.delete(mFilePath, mApkFileName);
+
+                // Close dialog
                 dialog.dismiss();
             }
         });

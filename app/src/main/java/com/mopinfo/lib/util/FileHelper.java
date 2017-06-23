@@ -284,4 +284,18 @@ public class FileHelper {
         file.deleteOnExit();
         LOGGER.info(String.format("File deletedOnExit, fileName=%s", fileName));
     }
+
+    public static void delete(String filePath, String fileName) {
+        String fullPath = String.format("%s/%s", filePath, fileName);
+        File file = new File(fullPath);
+        file.delete();
+        LOGGER.info(String.format("File delete, fileName=%s", fileName));
+    }
+
+    public static void delete(Context context, String fileName) {
+        String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
+        File file = new File(path);
+        file.delete();
+        LOGGER.info(String.format("File delete, fileName=%s", fileName));
+    }
 }
