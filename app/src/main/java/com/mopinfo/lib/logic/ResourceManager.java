@@ -1,6 +1,9 @@
 package com.mopinfo.lib.logic;
 
+import android.content.Context;
+
 import com.mopinfo.lib.common.NutchException;
+import com.mopinfo.lib.util.MonitorHelper;
 import com.mopinfo.mop2048.config.ConfigManager;
 import com.mopinfo.lib.json.resource.UrlItem;
 import com.mopinfo.lib.json.resource.UrlResponse;
@@ -20,6 +23,7 @@ public class ResourceManager {
 
     private static ResourceManager s;
 
+    private Context mContext;
     private String mHost;
     private String mUId;
     private List<UrlItem> mUrlItemList;
@@ -43,11 +47,12 @@ public class ResourceManager {
         }
     }
 
-    public void load(String host, String uid) {
+    public void load(Context context, String host, String uid) {
         if (this.mHost != null || this.mUId != null) {
             return;
         }
 
+        this.mContext = context;
         this.mHost = host;
         this.mUId = uid;
 
@@ -56,6 +61,16 @@ public class ResourceManager {
             @Override
             public void run() {
                 try {
+                    // Delay time, to wait wifi become available
+                    int delay = 0;
+                    while (delay < 5) {
+                        if (MonitorHelper.isNetworkAvailable(mContext)) {
+                            break;
+                        }
+                        Thread.sleep(1000);
+                        delay++;
+                    }
+
                     LOGGER.debug("load resource, host=" + mHost);
                     UrlResponse rsp = ResourceHelper.getResource(mHost, mUId);
                     if (rsp != null && rsp.getUrlItemList() != null) {
@@ -63,6 +78,8 @@ public class ResourceManager {
                         LOGGER.debug("load ok, rsp.urlItemList.size=" + rsp.getUrlItemList().size());
                     }
                 } catch (NutchException ex) {
+                    LOGGER.error("Load error, ex=" + ex);
+                } catch (InterruptedException ex) {
                     LOGGER.error("Load error, ex=" + ex);
                 }
             }

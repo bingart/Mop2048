@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         String userAgent = UserAgentHelper.getUserAgent(mUId);
 
         // Load resource
-        ResourceManager.getInstance().load(ConfigManager.getInstance().getAppResourceHost(), mUId);
+        ResourceManager.getInstance().load(
+                this, ConfigManager.getInstance().getAppResourceHost(), mUId);
 
         // Webview
         mWebView = (WebView) findViewById(R.id.webView);
